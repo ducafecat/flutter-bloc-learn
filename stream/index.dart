@@ -52,6 +52,7 @@ fromFutures() async {
 // 单对单
 listen() async {
   Stream<int> stream = Stream<int>.periodic(Duration(seconds: 1), (val) => val);
+
   stream.listen(
     (event) {
       print(event);
@@ -122,8 +123,8 @@ scListen() async {
 scBroadcast() async {
   StreamController sc = StreamController.broadcast();
 
-  sc.stream.listen(print);
-  sc.stream.listen(print);
+  StreamSubscription ss1 = sc.stream.listen(print);
+  StreamSubscription ss2 = sc.stream.listen(print);
 
   sc.addStream(Stream.fromIterable([1, 2, 3, 4, 5]));
 
@@ -139,10 +140,10 @@ scTransformer() async {
     handleData: (int data, EventSink sink) {
       sink.add((data * 2).toDouble());
     },
-    handleError: (error, stacktrace, sink) {
+    handleError: (Object error, StackTrace stacktrace, EventSink sink) {
       sink.addError('wrong: $error');
     },
-    handleDone: (sink) {
+    handleDone: (EventSink sink) {
       sink.close();
     },
   );
